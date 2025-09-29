@@ -1,0 +1,197 @@
+{
+  "tools": [
+    {
+      "name": "navigate_to_page",
+      "description": "Navigate to different sections or pages within the application",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "string",
+            "description": "The target page or section to navigate to",
+            "enum": ["home", "products", "categories", "cart", "search", "favorites", "help"]
+          }
+        },
+        "required": ["page"]
+      }
+    },
+    {
+      "name": "filter_products",
+      "description": "Filter products by category, price range, or availability status",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Product category to filter by",
+            "enum": ["Plumbing", "Tools", "Paint", "Hardware", "Electrical", "Appliances"]
+          },
+          "priceRange": {
+            "type": "string",
+            "description": "Price range in format 'min-max' (e.g., '10-50')",
+            "pattern": "^\\d+-\\d+$"
+          },
+          "inStock": {
+            "type": "boolean",
+            "description": "Filter to show only in-stock items"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "view_product_details",
+      "description": "Display detailed information about a specific product",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "The ID of the product to view details for"
+          }
+        },
+        "required": ["productId"]
+      }
+    },
+    {
+      "name": "add_to_cart",
+      "description": "Add a product to the shopping cart with optional quantity",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "The ID of the product to add to cart"
+          },
+          "quantity": {
+            "type": "number",
+            "description": "Number of items to add (default: 1)",
+            "minimum": 1,
+            "maximum": 10
+          }
+        },
+        "required": ["productId"]
+      }
+    },
+    {
+      "name": "search_products",
+      "description": "Search for products using keywords or product names",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query for finding products",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "get_cart_info",
+      "description": "Display current cart contents, total value, and item count",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "check_compatibility",
+      "description": "Verify compatibility between multiple products or validate cart contents",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "productIds": {
+            "type": "array",
+            "description": "Array of product IDs to check compatibility for",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "maxItems": 10
+          }
+        },
+        "required": ["productIds"]
+      }
+    },
+    {
+      "name": "get_recommendations",
+      "description": "Get smart product recommendations based on a specific product or category",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "Product ID to get recommendations for"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category to get recommendations from",
+            "enum": ["Plumbing", "Tools", "Paint", "Hardware", "Electrical", "Appliances"]
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "remove_from_cart",
+      "description": "Remove a product from the shopping cart",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "The ID of the product to remove from cart"
+          }
+        },
+        "required": ["productId"]
+      }
+    },
+    {
+      "name": "clear_cart",
+      "description": "Remove all items from the shopping cart",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "get_project_products",
+      "description": "Get products recommended for specific home improvement projects",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "projectType": {
+            "type": "string",
+            "description": "Type of home improvement project",
+            "enum": ["bathroom_remodel", "kitchen_remodel", "room_painting", "furniture_assembly", "lighting_install"]
+          }
+        },
+        "required": ["projectType"]
+      }
+    },
+    {
+      "name": "compare_products",
+      "description": "Compare specifications and features between multiple products",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "productIds": {
+            "type": "array",
+            "description": "Array of product IDs to compare",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "maxItems": 4
+          }
+        },
+        "required": ["productIds"]
+      }
+    }
+  ]
+}
