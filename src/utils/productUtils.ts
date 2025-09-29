@@ -7,7 +7,7 @@ export interface Product {
   price: number;
   description: string;
   image: string;
-  specs: Record<string, any>;
+  specs: Record<string, string | number | boolean>;
   compatibilities: number[];
   incompatibilities: number[];
   requires: number[];
