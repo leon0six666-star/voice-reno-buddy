@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { HeroSection } from '@/components/HeroSection';
 import { CategoryGrid } from '@/components/CategoryGrid';
 import { FeaturedProducts } from '@/components/FeaturedProducts';
-import { VoiceAssistant } from '@/components/VoiceAssistant';
+import { ElevenLabsWidget } from '@/components/ElevenLabsWidget';
 import { SearchResults } from '@/components/SearchResults';
 import { productService, Product } from '@/utils/productUtils';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [searchResults, setSearchResults] = useState<Product[]>([]);
@@ -16,7 +18,79 @@ const Index = () => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const { toast } = useToast();
 
-  const handleAddToCart = (product: Product) => {
+  // Handle URL-driven actions from ElevenLabs voice commands
+  useEffect(() => {
+    const action = searchParams.get('action');
+    if (!action) return;
+
+    switch (action) {
+      case 'filter':
+        handleFilterProducts();
+        break;
+      case 'view_details':
+        handleViewProductDetails();
+        break;
+      case 'add_to_cart':
+        handleAddToCartFromURL();
+        break;
+      case 'search':
+        handleSearchFromURL();
+        break;
+      case 'get_cart':
+        handleGetCartInfo();
+        break;
+      case 'check_compatibility':
+        handleCheckCompatibility();
+        break;
+      case 'get_recommendations':
+        handleGetRecommendations();
+        break;
+    }
+
+    // Clear action after processing
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      newParams.delete('action');
+      return newParams;
+    });
+  }, [searchParams, setSearchParams, handleFilterProducts, handleViewProductDetails, handleAddToCartFromURL, handleSearchFromURL, handleGetCartInfo, handleCheckCompatibility, handleGetRecommendations]);
+
+  const handleFilterProducts = useCallback(() => {
+    const category = searchParams.get('category');
+    const priceRange = searchParams.get('priceRange');
+    const inStock = searchParams.get('inStock');
+    
+    let results = productService.getAllProducts();
+    
+    if (category) {
+      results = results.filter(p => p.category.toLowerCase() === category.toLowerCase());
+    }
+    if (priceRange) {
+      const [min, max] = priceRange.split('-').map(Number);
+      results = results.filter(p => p.price >= min && p.price <= max);
+    }
+    if (inStock === 'true') {
+      results = results.filter(p => p.inStock);
+    }
+    
+    setSearchResults(results);
+    setSearchMessage(`Filtered products: ${results.length} found`);
+    setShowSearchResults(true);
+  }, [searchParams]);
+
+  const handleViewProductDetails = useCallback(() => {
+    const productId = searchParams.get('productId');
+    if (productId) {
+      const product = productService.getProductById(parseInt(productId));
+      if (product) {
+        setSearchResults([product]);
+        setSearchMessage(`Product details: ${product.name}`);
+        setShowSearchResults(true);
+      }
+    }
+  }, [searchParams]);
+
+  const handleAddToCart = useCallback((product: Product) => {
     setCartItems(prev => [...prev, product]);
     
     // Validate cart after adding item
@@ -43,7 +117,81 @@ const Index = () => {
         description: `${product.name} has been added to your cart.`,
       });
     }
-  };
+  }, [cartItems, toast]);
+
+  const handleAddToCartFromURL = useCallback(() => {
+    const productId = searchParams.get('productId');
+    const quantity = parseInt(searchParams.get('quantity') || '1');
+    
+    if (productId) {
+      const product = productService.getProductById(parseInt(productId));
+      if (product) {
+        for (let i = 0; i < quantity; i++) {
+          handleAddToCart(product);
+        }
+      }
+    }
+  }, [searchParams, handleAddToCart]);
+
+  const handleSearch = useCallback((query: string) => {
+    const results = productService.searchProducts(query);
+    setSearchResults(results);
+    setSearchMessage(`Found ${results.length} products matching "${query}"`);
+    setShowSearchResults(true);
+  }, []);
+
+  const handleSearchFromURL = useCallback(() => {
+    const query = searchParams.get('search');
+    if (query) {
+      handleSearch(query);
+    }
+  }, [searchParams, handleSearch]);
+
+  const handleGetCartInfo = useCallback(() => {
+    const message = `Cart contains ${cartItems.length} items. Total value: ${cartItems.reduce((sum, item) => sum + item.price, 0).toFixed(2)}`;
+    toast({
+      title: "Cart Information",
+      description: message,
+    });
+  }, [cartItems, toast]);
+
+  const handleCheckCompatibility = useCallback(() => {
+    const productIds = searchParams.get('productIds')?.split(',').map(Number) || [];
+    const validation = productService.validateCart(productIds);
+    
+    const message = validation.isValid 
+      ? "All products are compatible!" 
+      : `Compatibility issues found: ${validation.conflicts.length} conflicts, ${validation.missing.length} missing requirements`;
+    
+    toast({
+      title: "Compatibility Check",
+      description: message,
+      variant: validation.isValid ? "default" : "destructive"
+    });
+  }, [searchParams, toast]);
+
+  const handleGetRecommendations = useCallback(() => {
+    const productId = searchParams.get('productId');
+    const category = searchParams.get('category');
+    
+    let results: Product[] = [];
+    let message = '';
+    
+    if (productId) {
+      const product = productService.getProductById(parseInt(productId));
+      if (product) {
+        results = productService.getRecommendations(parseInt(productId));
+        message = `Recommendations for ${product.name}`;
+      }
+    } else if (category) {
+      results = productService.getProductsByCategory(category);
+      message = `Recommendations in ${category}`;
+    }
+    
+    setSearchResults(results);
+    setSearchMessage(message);
+    setShowSearchResults(true);
+  }, [searchParams]);
 
   const handleToggleFavorite = (productId: string) => {
     setFavorites(prev => 
@@ -51,32 +199,6 @@ const Index = () => {
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     );
-  };
-
-  const handleVoiceCommand = (command: string) => {
-    console.log('Voice command:', command);
-    toast({
-      title: "Voice command received",
-      description: `Processing: "${command}"`,
-    });
-  };
-
-  const handleProductsFound = (products: Product[], message: string) => {
-    setSearchResults(products);
-    setSearchMessage(message);
-    setShowSearchResults(true);
-    
-    // Auto-hide after 10 seconds if no interaction
-    setTimeout(() => {
-      setShowSearchResults(false);
-    }, 10000);
-  };
-
-  const handleSearch = (query: string) => {
-    const results = productService.searchProducts(query);
-    setSearchResults(results);
-    setSearchMessage(`Found ${results.length} products matching "${query}"`);
-    setShowSearchResults(true);
   };
 
   const handleCategorySelect = (categoryId: string) => {
@@ -103,11 +225,12 @@ const Index = () => {
         />
       </main>
 
-      {/* Voice Assistant */}
-      <VoiceAssistant 
-        onCommand={handleVoiceCommand}
-        onProductsFound={handleProductsFound}
-        currentCart={cartItems.map(item => item.id)}
+      {/* ElevenLabs Voice Widget */}
+      <ElevenLabsWidget 
+        onToolCall={(toolName, args) => {
+          console.log('Voice tool called:', toolName, args);
+          // Additional logging or processing if needed
+        }}
       />
 
       {/* Search Results Overlay */}
