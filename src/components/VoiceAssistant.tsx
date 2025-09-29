@@ -4,11 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 
+import { productService, Product } from '@/utils/productUtils';
+
 interface VoiceAssistantProps {
   onCommand?: (command: string) => void;
+  onProductsFound?: (products: Product[], message: string) => void;
+  currentCart?: number[];
 }
 
-export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onCommand }) => {
+export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onCommand, onProductsFound, currentCart = [] }) => {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -40,14 +44,19 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ onCommand }) => 
       const transcript = event.results[0][0].transcript;
       onCommand?.(transcript);
       
+      // Process voice command through product service
+      const result = productService.processVoiceCommand(transcript, currentCart);
+      onProductsFound?.(result.products, result.message);
+      
       // Simulate AI response
       setTimeout(() => {
         setIsSpeaking(true);
-        // Simulate speaking duration
+        // Simulate speaking duration based on message length
+        const speakingDuration = Math.max(2000, result.message.length * 50);
         setTimeout(() => {
           setIsSpeaking(false);
           setIsVisible(false);
-        }, 2000);
+        }, speakingDuration);
       }, 500);
     };
 

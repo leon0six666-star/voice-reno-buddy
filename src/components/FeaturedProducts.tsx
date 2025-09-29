@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/ProductCard';
-import { sampleProducts, Product } from '@/data/products';
+import { productService, Product } from '@/utils/productUtils';
 
 interface FeaturedProductsProps {
   onAddToCart?: (product: Product) => void;
@@ -15,7 +15,7 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   onToggleFavorite,
   favorites = []
 }) => {
-  const featuredProducts = sampleProducts.slice(0, 4);
+  const featuredProducts = productService.getAllProducts().slice(0, 4);
 
   return (
     <section className="py-16">
@@ -39,10 +39,20 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
           {featuredProducts.map((product) => (
             <ProductCard
               key={product.id}
-              product={product}
-              onAddToCart={onAddToCart}
-              onToggleFavorite={onToggleFavorite}
-              isFavorite={favorites.includes(product.id)}
+              product={{
+                id: product.id.toString(),
+                name: product.name,
+                price: product.price,
+                rating: product.rating,
+                reviewCount: product.reviewCount,
+                image: product.image,
+                category: product.category,
+                inStock: product.inStock,
+                features: Object.values(product.specs).slice(0, 2).map(String)
+              }}
+              onAddToCart={() => onAddToCart?.(product)}
+              onToggleFavorite={() => onToggleFavorite?.(product.id.toString())}
+              isFavorite={favorites.includes(product.id.toString())}
             />
           ))}
         </div>
