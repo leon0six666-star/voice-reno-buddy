@@ -17,12 +17,29 @@ This toolkit provides everything needed to transform any React website into a fu
 
 | File | Description | Usage |
 |------|-------------|-------|
+| [`simple-widget-integration.md`](./simple-widget-integration.md) | **START HERE** - Simple widget approach | Basic integration (30 min) |
 | [`elevenlabs-transformation-guide.md`](./elevenlabs-transformation-guide.md) | Main transformation guide | Overview and planning |
-| [`transformation-methodology.md`](./transformation-methodology.md) | Step-by-step implementation | Follow this systematically |
-| [`elevenlabs-tools.json`](./elevenlabs-tools.json) | Tools definition for ElevenLabs | Upload directly to platform |
-| [`elevenlabs-knowledge.md`](./elevenlabs-knowledge.md) | Voice agent knowledge base | Customize for your domain |
-| [`elevenlabs-system-prompt.md`](./elevenlabs-system-prompt.md) | System prompt template | Configure agent behavior |
-| [`ui-control-patterns.md`](./ui-control-patterns.md) | Implementation patterns | Code examples and best practices |
+| [`transformation-methodology.md`](./transformation-methodology.md) | Step-by-step implementation | Advanced patterns |
+| [`elevenlabs-tools.json`](./elevenlabs-tools.json) | Tools definition for ElevenLabs | Copy to dashboard manually |
+| [`elevenlabs-knowledge.md`](./elevenlabs-knowledge.md) | Voice agent knowledge base | Copy to dashboard manually |
+| [`elevenlabs-system-prompt.md`](./elevenlabs-system-prompt.md) | System prompt template | Copy to dashboard manually |
+| [`ui-control-patterns.md`](./ui-control-patterns.md) | Implementation patterns | Code examples (advanced) |
+
+## 🚀 Two Integration Approaches
+
+### 1. **Simple Approach (Recommended)** ⚡
+- **Time**: 30 minutes
+- **Complexity**: Minimal  
+- **Method**: HTML widget + manual ElevenLabs dashboard setup
+- **Best for**: Most websites, quick integration
+- **Guide**: [`simple-widget-integration.md`](./simple-widget-integration.md)
+
+### 2. **Advanced Approach** 🔧
+- **Time**: 2-3 hours
+- **Complexity**: Full architecture
+- **Method**: URL-driven state management + programmatic tools
+- **Best for**: Complex apps, debugging needs, custom routing
+- **Guide**: [`transformation-methodology.md`](./transformation-methodology.md)
 
 ## 🎯 Transformation Results
 

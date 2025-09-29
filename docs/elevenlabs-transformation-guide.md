@@ -7,15 +7,31 @@
 
 ## 🎯 Overview
 
-This guide enables any LLM to transform existing websites into ElevenLabs-ready voice applications. Based on the successful transformation of voice-reno-buddy from Web Speech API to ElevenLabs URL-driven architecture.
+This guide enables any LLM to transform existing websites into ElevenLabs-ready voice applications. Based on the successful transformation of voice-reno-buddy from Web Speech API to ElevenLabs integration.
+
+### 🔧 How ElevenLabs Integration Works
+
+The integration consists of **3 simple components** that work together:
+
+1. **API Key** - Your ElevenLabs account authentication
+2. **Agent ID** - Unique identifier for your voice agent (created in ElevenLabs dashboard)  
+3. **Widget Code** - Simple HTML snippet that embeds the voice interface
+
+```html
+<elevenlabs-convai agent-id="YOUR_AGENT_ID"></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+```
+
+**Key Point**: The widget itself is just this simple HTML. All the configuration (tools, knowledge base, system prompts) is done manually in the ElevenLabs web interface, not programmatically.
 
 ### What This Guide Provides
 - ✅ **Complete transformation methodology** - Step-by-step process any LLM can follow
-- ✅ **Tools definition templates** - Ready-to-upload JSON for ElevenLabs
+- ✅ **Widget integration patterns** - How to embed the voice interface
+- ✅ **Tools definition templates** - Examples for manual ElevenLabs setup
 - ✅ **Knowledge base creation** - Voice agent knowledge templates
 - ✅ **System prompt templates** - Guidelines for voice interaction behavior
 - ✅ **UI control patterns** - URL-driven state management patterns
-- ✅ **Code examples** - React/TypeScript implementation patterns
+- ✅ **Manual setup guidance** - What to configure in ElevenLabs dashboard
 
 ### Transformation Success Criteria
 - ✅ Voice commands control UI through URL parameters
